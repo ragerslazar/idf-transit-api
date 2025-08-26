@@ -20,23 +20,26 @@ class MetroModel:
             print(f"An unexpected error occurred: {e}")
 
     def getAllMetroModel(self):
-        stations = set()
-        for station in self.data:
-            stations.add(station.get("res_com"))
-
-        return {"metro_lines": list(stations)}
+        lines = sorted({station.get("res_com") for station in self.data})
+        return {
+            "data": {
+                "metro_lines": {
+                    "count": len(lines),
+                    "names": lines
+                }
+            }
+        }
 
     def getAllStationsModel(self):
-        stations = set()
-        for station in self.data:
-            stations.add(station.get("nom_gares"))
-
-        return {"data": {
-            "stations": {
-                "count": len(stations),
-                "name": sorted(stations)
+        stations = sorted({station.get("nom_gares") for station in self.data})
+        return {
+            "data": {
+                "stations": {
+                    "count": len(stations),
+                    "names": stations
+                }
             }
-        }}
+        }
 
     def getStationsByLineModel(self, metro_line):
         stations = []
@@ -54,10 +57,10 @@ class MetroModel:
         stations = sorted(stations)
 
         return {
-            "metro_line": metro_line,
-            "img": img,
-            "operator": operator,
             "data": {
+                "metro_line": metro_line,
+                "img": img,
+                "operator": operator,
                 "stations": {
                     "count": len(stations),
                     "names": stations,
@@ -83,20 +86,30 @@ class MetroModel:
                 station_name = station.get("nom_gares")
 
         return {
-            "station": station_name,
-            "location": locations,
-            "operator": operator,
             "data": {
-                "lines": {
-                    "count": len(lines),
-                    "names": lines,
-                    "picto": picto
+                "station": {
+                    "name": station_name,
+                    "location": locations,
+                    "operator": operator,
+                    "lines": {
+                        "count": len(lines),
+                        "names": lines,
+                        "picto": picto
+                    }
                 }
             }
-            }
+        }
 
     def getStationNameByCode(self, code):
-        return next((station.get("nom_gares") for station in self.data if station.get("id_ref_zdc") == code), None)
+        name = next((station.get("nom_gares") for station in self.data if station.get("id_ref_zdc") == code), None)
+        return {
+            "data": {
+                "station": {
+                    "code": code,
+                    "name": name
+                }
+            }
+        }
 
     def getLineImg(self, line):
         return next((station.get("picto").get("url") for station in self.data if station.get("indice_lig") == line), None)

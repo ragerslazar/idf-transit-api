@@ -18,6 +18,6 @@ class MetroController:
 
     def getLinesByStationController(self, station):
         lines_by_station = self.metro_model.getLinesByStationModel(station)
-        if lines_by_station["data"]["lines"]["count"] == 0:
+        if lines_by_station["data"]["station"]["lines"]["count"] == 0:
             return None
         return lines_by_station
